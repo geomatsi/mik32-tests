@@ -1,0 +1,6 @@
+[submodule "c/deps/mik32-hal"]
+	path = c/deps/mik32-hal
+	url = git@github.com:MikronMIK32/mik32-hal.git
+[submodule "c/deps/mik32v2-shared"]
+	path = c/deps/mik32v2-shared
+	url = git@github.com:MikronMIK32/mik32v2-shared.git
