@@ -65,6 +65,21 @@ test2: $(TEST2_LDS) $(TEST2_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
 	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
+# test3: trap test
+#  - peripherals: mik32-hal
+#  - startup: minimalistic custom for RAM
+#  - linker script: minimalistic custom for RAM
+
+TEST3_ASRCS := crt_sram.s
+TEST3_CSRCS := test3.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
+TEST3_OBJS := $(patsubst %, $(BUILD)/%, $(TEST3_ASRCS:.s=.o))
+TEST3_OBJS += $(patsubst %, $(BUILD)/%, $(TEST3_CSRCS:.c=.o))
+TEST3_LDS := ld/flash_sram.ld
+
+test3: $(TEST3_LDS) $(TEST3_OBJS)
+	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
+	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
+
 # common
 
 $(BUILD):
@@ -77,7 +92,7 @@ $(BUILD)/%.o: %.c | $(BUILD)
 	$(CC) $(OPTS) $(CCFLAGS) -c $< -o $@
 
 tags:
-	ctags -a -R . $(HAL)
+	ctags -a -R . $(HAL) $(SHARED)
 
 clean:
 	rm -rf $(BUILD)
