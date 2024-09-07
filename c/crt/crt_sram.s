@@ -5,12 +5,10 @@
  * Copyright (c) 2024 geomatsi@gmail.com
  */
 
+	.section .init, "ax", @progbits
 	.globl _start
 	.globl main
-
-	.weak trap_handler
-
-	.section .init, "ax", @progbits
+	.align 1
 
 _start:
 	/* startup loop delay */
@@ -44,10 +42,6 @@ _start:
 	addi a0, a0, 4
 	bltu a0, a1, 1b
 2:
-	/* setup trap handler */
-	la t0, trap_handler
-	csrw mtvec, t0
-
 	/* main */
 	jal main
 
@@ -56,7 +50,13 @@ _start:
 	wfi
 	j 1b
 
-	.balign 0x40
+	.section .trap, "ax", @progbits
+	.weak trap_handler
+	.align 1
+
+trap_entry:
+	j trap_handler
+
 trap_handler:
 1:
 	wfi

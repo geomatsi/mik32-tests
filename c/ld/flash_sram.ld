@@ -14,6 +14,11 @@ SECTIONS
 		*(.init);
 	} >RAM AT>RAM
 
+	.trap : {
+		. = ORIGIN(RAM) + 0xC0;
+		KEEP(*(.trap));
+	} >RAM AT>RAM
+
 	.text : {
 		*(.text);
 		*(.text.*);
