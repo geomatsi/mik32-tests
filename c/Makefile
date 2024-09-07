@@ -28,12 +28,27 @@ CCFLAGS += \
 LDFLAGS += -L $(SHARED)/ldscripts -L ld
 
 VPATH += src crt \
-	 $(SHARED)/runtime \
 	 $(HAL)/core/Source \
-	 $(HAL)/peripherals/Source
+	 $(HAL)/peripherals/Source \
+	 $(SHARED)/runtime
 
 all:
-	@echo "Examples: not yet"
+	@echo "Examples: test1"
+
+# test1: blink test
+#  - peripherals: mik32-hal
+#  - startup: mik32-shared
+#  - linker script: mik32-shared for RAM
+
+TEST1_ASRCS := crt0.S
+TEST1_CSRCS := test1.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
+TEST1_OBJS := $(patsubst %, $(BUILD)/%, $(TEST1_ASRCS:.S=.o))
+TEST1_OBJS += $(patsubst %, $(BUILD)/%, $(TEST1_CSRCS:.c=.o))
+TEST1_LDS := $(SHARED)/ldscripts/ram.ld
+
+test1: $(TEST1_LDS) $(TEST1_OBJS)
+	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
+	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
 # common
 
