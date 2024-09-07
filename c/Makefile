@@ -33,7 +33,7 @@ VPATH += src crt \
 	 $(SHARED)/runtime
 
 all:
-	@echo "Examples: test1"
+	@echo "Examples: test1 test2"
 
 # test1: blink test
 #  - peripherals: mik32-hal
@@ -47,6 +47,21 @@ TEST1_OBJS += $(patsubst %, $(BUILD)/%, $(TEST1_CSRCS:.c=.o))
 TEST1_LDS := $(SHARED)/ldscripts/ram.ld
 
 test1: $(TEST1_LDS) $(TEST1_OBJS)
+	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
+	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
+
+# test2: blink test
+#  - peripherals: mik32-hal
+#  - startup: minimalistic custom for RAM
+#  - linker script: minimalistic custom for RAM
+
+TEST2_ASRCS := crt_sram.s
+TEST2_CSRCS := test1.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
+TEST2_OBJS := $(patsubst %, $(BUILD)/%, $(TEST2_ASRCS:.s=.o))
+TEST2_OBJS += $(patsubst %, $(BUILD)/%, $(TEST2_CSRCS:.c=.o))
+TEST2_LDS := ld/flash_sram.ld
+
+test2: $(TEST2_LDS) $(TEST2_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
 	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
