@@ -59,7 +59,7 @@ TEST2_ASRCS := crt_sram.s
 TEST2_CSRCS := test1.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
 TEST2_OBJS := $(patsubst %, $(BUILD)/%, $(TEST2_ASRCS:.s=.o))
 TEST2_OBJS += $(patsubst %, $(BUILD)/%, $(TEST2_CSRCS:.c=.o))
-TEST2_LDS := ld/flash_sram.ld
+TEST2_LDS := ld/sram.ld
 
 test2: $(TEST2_LDS) $(TEST2_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
@@ -74,7 +74,7 @@ TEST3_ASRCS := crt_sram.s
 TEST3_CSRCS := test3.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
 TEST3_OBJS := $(patsubst %, $(BUILD)/%, $(TEST3_ASRCS:.s=.o))
 TEST3_OBJS += $(patsubst %, $(BUILD)/%, $(TEST3_CSRCS:.c=.o))
-TEST3_LDS := ld/flash_sram.ld
+TEST3_LDS := ld/sram.ld
 
 test3: $(TEST3_LDS) $(TEST3_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
