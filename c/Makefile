@@ -13,13 +13,14 @@ AS = $(CROSS_COMPILE)as
 LD = $(CROSS_COMPILE)ld
 
 ASFLAGS = -march=rv32imc_zicsr_zifencei
-CCFLAGS = -march=rv32imc_zicsr_zifencei -mabi=ilp32 -std=gnu99 -ffunction-sections -fdata-sections -ffreestanding -Wall -Wextra -Werror -fno-stack-protector
+CCFLAGS = -march=rv32imc_zicsr_zifencei -mabi=ilp32 -std=gnu99 -ffunction-sections -fdata-sections -ffreestanding -Wall -Wextra -Werror -fno-stack-protector -O2
 LDFLAGS = -nostdlib --gc-sections --fatal-warnings
 
 # FIXME: suppress warning about RWX SRAM:
 LDFLAGS += --no-warn-rwx-segment
 
 CCFLAGS += \
+	   -I$(SHARED)/libs \
 	   -I$(SHARED)/include \
 	   -I$(SHARED)/periphery \
 	   -I$(HAL)/core/Include \
@@ -28,17 +29,18 @@ CCFLAGS += \
 LDFLAGS += -L $(SHARED)/ldscripts -L ld
 
 VPATH += src crt \
+	 $(SHARED)/libs \
+	 $(SHARED)/runtime \
 	 $(HAL)/core/Source \
 	 $(HAL)/peripherals/Source \
-	 $(SHARED)/runtime
 
 all:
-	@echo "Examples: test1 test2"
+	@echo "Examples: test1 test2 test3"
 
 # test1: blink test
 #  - peripherals: mik32-hal
-#  - startup: mik32-shared
-#  - linker script: mik32-shared for RAM
+#  - startup: mik32v2-shared
+#  - linker script: mik32v2-shared for RAM
 
 TEST1_ASRCS := crt0.S
 TEST1_CSRCS := test1.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
