@@ -62,14 +62,6 @@ _start:
 	.align 1
 
 trap_entry:
-	/* FIXME:
-	 *  - step over needed only for some traps such as ebreak/ecall
-	 *  - now feeling lucky not saving t0 on stack
-	 */
-	csrr t0, mepc
-	addi t0, t0, 4
-	csrw mepc, t0
-
 	j trap_handler
 
 trap_handler:
