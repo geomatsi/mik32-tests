@@ -42,6 +42,13 @@ _start:
 	addi a0, a0, 4
 	bltu a0, a1, 1b
 2:
+	/* setup mtvec:
+         * - low bits are hardwired to 0xc0
+         * - higher bits be changed to fit eeprom/sram/spifi
+         */
+	la t0, trap_entry
+	csrw mtvec, t0
+
 	/* main */
 	jal main
 
