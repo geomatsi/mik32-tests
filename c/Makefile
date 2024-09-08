@@ -52,13 +52,14 @@ test1: $(TEST1_LDS) $(TEST1_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
 	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
-# test2: blink test
+# test2: blink and uart test
 #  - peripherals: mik32-hal
+#  - xprintf: mik32v2-shared
 #  - startup: minimalistic custom for RAM
 #  - linker script: minimalistic custom for RAM
 
 TEST2_ASRCS := crt_sram.s
-TEST2_CSRCS := test1.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
+TEST2_CSRCS := test2.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
 TEST2_OBJS := $(patsubst %, $(BUILD)/%, $(TEST2_ASRCS:.s=.o))
 TEST2_OBJS += $(patsubst %, $(BUILD)/%, $(TEST2_CSRCS:.c=.o))
 TEST2_LDS := ld/sram.ld
