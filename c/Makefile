@@ -83,6 +83,22 @@ test3: $(TEST3_LDS) $(TEST3_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
 	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
+# test4: enumerate debug triggers
+#  - peripherals: mik32-hal
+#  - xprintf: mik32v2-shared
+#  - startup: minimalistic custom for RAM
+#  - linker script: minimalistic custom for RAM
+
+TEST4_ASRCS := crt_sram.s
+TEST4_CSRCS := test4.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST4_OBJS := $(patsubst %, $(BUILD)/%, $(TEST4_ASRCS:.s=.o))
+TEST4_OBJS += $(patsubst %, $(BUILD)/%, $(TEST4_CSRCS:.c=.o))
+TEST4_LDS := ld/sram.ld
+
+test4: $(TEST4_LDS) $(TEST4_OBJS)
+	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
+	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
+
 # common
 
 $(BUILD):
