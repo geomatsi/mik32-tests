@@ -160,15 +160,15 @@ void main(void)
 	for (c = 0; ; c++) {
 		write_csr(tselect, c);
 		if (ret) {
-			xprintf("%s: no %s triggers implemented...\n",
-				__func__, c ? "more" : "");
+			xprintf("%s(%d): no %s triggers implemented...\n",
+				__func__, __LINE__, c ? "more" : "");
 			break;
 		}
 
 		v = read_csr(tselect);
 		if (v != c) {
-			xprintf("%s: no %s triggers implemented...\n",
-				__func__, c ? "more" : "");
+			xprintf("%s(%d): no %s triggers implemented...\n",
+				__func__, __LINE__, c ? "more" : "");
 			break;
 		}
 
@@ -176,14 +176,14 @@ void main(void)
 		if (ret) {
 			v = read_csr(tdata1);
 			if (ret || (v == 0)) {
-				xprintf("%s: no %s triggers implemented...\n",
-					__func__, c ? "more" : "");
+				xprintf("%s(%d): no %s triggers implemented...\n",
+					__func__, __LINE__, c ? "more" : "");
 				break;
 			}
 		} else {
 			if (TINFO_INFO(v) == 0x1) {
-				xprintf("%s: no %s triggers implemented...\n",
-					__func__, c ? "more" : "");
+				xprintf("%s(%d): no %s triggers implemented...\n",
+					__func__, __LINE__, c ? "more" : "");
 				break;
 			}
 		}
