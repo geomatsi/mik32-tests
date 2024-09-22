@@ -115,6 +115,22 @@ test5: $(TEST5_LDS) $(TEST5_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
 	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
+# test6: h/w breakpoints
+#  - peripherals: mik32-hal
+#  - xprintf: mik32v2-shared
+#  - startup: minimalistic custom for RAM
+#  - linker script: minimalistic custom for RAM
+
+TEST6_ASRCS := crt_sram.s
+TEST6_CSRCS := test6.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST6_OBJS := $(patsubst %, $(BUILD)/%, $(TEST6_ASRCS:.s=.o))
+TEST6_OBJS += $(patsubst %, $(BUILD)/%, $(TEST6_CSRCS:.c=.o))
+TEST6_LDS := ld/sram.ld
+
+test6: $(TEST6_LDS) $(TEST6_OBJS)
+	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
+	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
+
 # common
 
 $(BUILD):
