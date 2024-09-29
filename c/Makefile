@@ -131,6 +131,22 @@ test6: $(TEST6_LDS) $(TEST6_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
 	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
+# test7: icount h/w trigger
+#  - peripherals: mik32-hal
+#  - xprintf: mik32v2-shared
+#  - startup: minimalistic custom for RAM
+#  - linker script: minimalistic custom for RAM
+
+TEST7_ASRCS := crt_sram.s
+TEST7_CSRCS := test7.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST7_OBJS := $(patsubst %, $(BUILD)/%, $(TEST7_ASRCS:.s=.o))
+TEST7_OBJS += $(patsubst %, $(BUILD)/%, $(TEST7_CSRCS:.c=.o))
+TEST7_LDS := ld/sram.ld
+
+test7: $(TEST7_LDS) $(TEST7_OBJS)
+	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
+	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
+
 # common
 
 $(BUILD):
