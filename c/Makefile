@@ -43,7 +43,7 @@ all:
 #  - linker script: mik32v2-shared for RAM
 
 TEST1_ASRCS := crt0.S
-TEST1_CSRCS := test1.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
+TEST1_CSRCS := test1.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c elbear_init.c
 TEST1_OBJS := $(patsubst %, $(BUILD)/%, $(TEST1_ASRCS:.S=.o))
 TEST1_OBJS += $(patsubst %, $(BUILD)/%, $(TEST1_CSRCS:.c=.o))
 TEST1_LDS := $(SHARED)/ldscripts/ram.ld
@@ -59,7 +59,7 @@ test1: $(TEST1_LDS) $(TEST1_OBJS)
 #  - linker script: minimalistic custom for RAM
 
 TEST2_ASRCS := crt_sram.s
-TEST2_CSRCS := test2.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST2_CSRCS := test2.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c elbear_init.c
 TEST2_OBJS := $(patsubst %, $(BUILD)/%, $(TEST2_ASRCS:.s=.o))
 TEST2_OBJS += $(patsubst %, $(BUILD)/%, $(TEST2_CSRCS:.c=.o))
 TEST2_LDS := ld/sram.ld
@@ -74,7 +74,7 @@ test2: $(TEST2_LDS) $(TEST2_OBJS)
 #  - linker script: minimalistic custom for RAM
 
 TEST3_ASRCS := crt_sram.s
-TEST3_CSRCS := test3.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c
+TEST3_CSRCS := test3.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c elbear_init.c
 TEST3_OBJS := $(patsubst %, $(BUILD)/%, $(TEST3_ASRCS:.s=.o))
 TEST3_OBJS += $(patsubst %, $(BUILD)/%, $(TEST3_CSRCS:.c=.o))
 TEST3_LDS := ld/sram.ld
@@ -90,7 +90,7 @@ test3: $(TEST3_LDS) $(TEST3_OBJS)
 #  - linker script: minimalistic custom for RAM
 
 TEST4_ASRCS := crt_sram.s
-TEST4_CSRCS := test4.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST4_CSRCS := test4.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c elbear_init.c
 TEST4_OBJS := $(patsubst %, $(BUILD)/%, $(TEST4_ASRCS:.s=.o))
 TEST4_OBJS += $(patsubst %, $(BUILD)/%, $(TEST4_CSRCS:.c=.o))
 TEST4_LDS := ld/sram.ld
@@ -106,7 +106,7 @@ test4: $(TEST4_LDS) $(TEST4_OBJS)
 #  - linker script: minimalistic custom for RAM
 
 TEST5_ASRCS := crt_sram.s
-TEST5_CSRCS := test5.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST5_CSRCS := test5.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c elbear_init.c
 TEST5_OBJS := $(patsubst %, $(BUILD)/%, $(TEST5_ASRCS:.s=.o))
 TEST5_OBJS += $(patsubst %, $(BUILD)/%, $(TEST5_CSRCS:.c=.o))
 TEST5_LDS := ld/sram.ld
@@ -122,7 +122,7 @@ test5: $(TEST5_LDS) $(TEST5_OBJS)
 #  - linker script: minimalistic custom for RAM
 
 TEST6_ASRCS := crt_sram.s
-TEST6_CSRCS := test6.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST6_CSRCS := test6.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c elbear_init.c
 TEST6_OBJS := $(patsubst %, $(BUILD)/%, $(TEST6_ASRCS:.s=.o))
 TEST6_OBJS += $(patsubst %, $(BUILD)/%, $(TEST6_CSRCS:.c=.o))
 TEST6_LDS := ld/sram.ld
@@ -138,7 +138,7 @@ test6: $(TEST6_LDS) $(TEST6_OBJS)
 #  - linker script: minimalistic custom for RAM
 
 TEST7_ASRCS := crt_sram.s
-TEST7_CSRCS := test7.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST7_CSRCS := test7.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c elbear_init.c
 TEST7_OBJS := $(patsubst %, $(BUILD)/%, $(TEST7_ASRCS:.s=.o))
 TEST7_OBJS += $(patsubst %, $(BUILD)/%, $(TEST7_CSRCS:.c=.o))
 TEST7_LDS := ld/sram.ld
@@ -154,7 +154,7 @@ test7: $(TEST7_LDS) $(TEST7_OBJS)
 #  - linker script: minimalistic custom for RAM
 
 TEST8_ASRCS := crt_sram.s
-TEST8_CSRCS := test8.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST8_CSRCS := test8.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c elbear_init.c
 TEST8_OBJS := $(patsubst %, $(BUILD)/%, $(TEST8_ASRCS:.s=.o))
 TEST8_OBJS += $(patsubst %, $(BUILD)/%, $(TEST8_CSRCS:.c=.o))
 TEST8_LDS := ld/sram.ld
