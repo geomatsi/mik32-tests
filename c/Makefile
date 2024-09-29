@@ -147,6 +147,23 @@ test7: $(TEST7_LDS) $(TEST7_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
 	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
+# test8: stack overflow for recursive trap handler
+#  - peripherals: mik32-hal
+#  - xprintf: mik32v2-shared
+#  - startup: minimalistic custom for RAM
+#  - linker script: minimalistic custom for RAM
+
+TEST8_ASRCS := crt_sram.s
+TEST8_CSRCS := test8.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c
+TEST8_OBJS := $(patsubst %, $(BUILD)/%, $(TEST8_ASRCS:.s=.o))
+TEST8_OBJS += $(patsubst %, $(BUILD)/%, $(TEST8_CSRCS:.c=.o))
+TEST8_LDS := ld/sram.ld
+
+test8: $(TEST8_LDS) $(TEST8_OBJS)
+	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
+	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
+
+
 # common
 
 $(BUILD):
