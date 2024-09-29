@@ -4,14 +4,8 @@
 
 #include "riscv_csr_encoding.h"
 #include "xprintf.h"
+#include "dbtr.h"
 #include "csr.h"
-
-#define TDATA1_MCONTROL_LOAD       (0x1 << 0)
-#define TDATA1_MCONTROL_STORE      (0x1 << 1)
-#define TDATA1_MCONTROL_EXEC       (0x1 << 2)
-#define TDATA1_MCONTROL_MODE       (0x1 << 6)
-#define TDATA1_MCONTROL_CHAIN      (0x1 << 11)
-#define TDATA1_MCONTROL_HIT        (0x1 << 20)
 
 USART_HandleTypeDef husart0;
 unsigned long rdata = 10;
@@ -121,11 +115,15 @@ int enable_trigger(unsigned long c)
 
 	switch (c) {
 		case 0: /* trigger #0: read watchpoint */
-			v = TDATA1_MCONTROL_LOAD  | TDATA1_MCONTROL_MODE;
+			v = TDATA1_MCONTROL_LOAD  | TDATA1_MCONTROL_MODE_M |
+				TDATA1_MCONTROL_MATCH_W(TDATA1_MCONTROL_MATCH_EQUAL) |
+				TDATA1_MCONTROL_ACTION_W(TDATA1_MCONTROL_ACTION_EBREAK);
 			addr = &rdata;
 			break;
 		case 1: /* trigger #1: write watchpoint */
-			v = TDATA1_MCONTROL_STORE | TDATA1_MCONTROL_MODE;
+			v = TDATA1_MCONTROL_STORE | TDATA1_MCONTROL_MODE_M |
+				TDATA1_MCONTROL_MATCH_W(TDATA1_MCONTROL_MATCH_EQUAL) |
+				TDATA1_MCONTROL_ACTION_W(TDATA1_MCONTROL_ACTION_EBREAK);
 			addr = &wdata;
 			break;
 		default:
@@ -258,8 +256,7 @@ void trap_handler(void)
 	int step_over = 0;
 	int ret;
 
-	__asm__ volatile ("csrr %0, mcause\n\t"
-		: "=r" (mcause) : : );
+	mcause = read_csr(mcause);
 
 	/* reset trap status */
 	eret = 0;

@@ -3,24 +3,8 @@
 #include "mik32_hal_usart.h"
 
 #include "csr.h"
+#include "dbtr.h"
 #include "xprintf.h"
-
-#define TINFO_INFO(c)              ((c) & 0xff)
-#define TINFO_ICOUNT(c)            ((c) & (0x1 << 3))
-#define TINFO_MCONTROL(c)          ((c) & (0x1 << 2))
-
-#define TDATA1_MCONTROL_LOAD       (0x1 << 0)
-#define TDATA1_MCONTROL_STORE      (0x1 << 1)
-#define TDATA1_MCONTROL_EXEC       (0x1 << 2)
-#define TDATA1_MCONTROL_MODE       (0x1 << 6)
-#define TDATA1_MCONTROL_CHAIN      (0x1 << 11)
-
-#define TDATA1_ICOUNT_MODE         (0x1 << 9)
-
-#define TDATA1_ICOUNT_COUNT_S      (10)
-#define TDATA1_ICOUNT_COUNT_M      (0x3fff)
-#define TDATA1_ICOUNT_COUNT_W(c)   (((c) & TDATA1_ICOUNT_COUNT_M) << TDATA1_ICOUNT_COUNT_S)
-#define TDATA1_ICOUNT_COUNT_R(c)   (((c) >> TDATA1_ICOUNT_COUNT_S) & TDATA1_ICOUNT_COUNT_M)
 
 USART_HandleTypeDef husart0;
 int ret;
@@ -103,12 +87,9 @@ void USART_Init()
 void trap_handler(void) __attribute__((interrupt("machine"))) __attribute__((section(".trap")));
 void trap_handler(void)
 {
-	unsigned long mcause;
+	unsigned long mcause = read_csr(mcause);
 	unsigned long t1 = 0;
 	int step_over = 0;
-
-	__asm__ volatile ("csrr %0, mcause\n\t"
-		: "=r" (mcause) : : );
 
 	/* reset trap status */
 	ret = 0;
@@ -181,7 +162,7 @@ void main(void)
 				break;
 			}
 		} else {
-			if (TINFO_INFO(v) == 0x1) {
+			if (TINFO_DBTR_NOEXIST(v)) {
 				xprintf("%s(%d): no %s triggers implemented...\n",
 					__func__, __LINE__, c ? "more" : "");
 				break;
@@ -189,11 +170,11 @@ void main(void)
 		}
 
 		xprintf("%s: trigger %u supported types: [ %s%s]\n", __func__, c,
-			TINFO_MCONTROL(v) ? "MCONTROL " : "",
-			TINFO_ICOUNT(v) ? "ICOUNT " : "");
+			TINFO_DBTR_MCONTROL(v) ? "MCONTROL " : "",
+			TINFO_DBTR_ICOUNT(v) ? "ICOUNT " : "");
 
 		/* check mcontrol trigger properties assuming it is WARL */
-		if (TINFO_MCONTROL(v)) {
+		if (TINFO_DBTR_MCONTROL(v)) {
 			write_csr(tdata1, 0x0);
 			if (ret) {
 				xprintf("%s: failed to zero tdata1 for trigger %lu...\n",
@@ -208,7 +189,9 @@ void main(void)
 				continue;
 			}
 
-			v = TDATA1_MCONTROL_LOAD  | TDATA1_MCONTROL_STORE |  TDATA1_MCONTROL_EXEC  | TDATA1_MCONTROL_MODE  | TDATA1_MCONTROL_CHAIN;
+			v = TDATA1_MCONTROL_LOAD  | TDATA1_MCONTROL_STORE | TDATA1_MCONTROL_EXEC   |
+				TDATA1_MCONTROL_MODE_M | TDATA1_MCONTROL_CHAIN;
+
 			xprintf("%s: trigger %lu: write 0x%lx to tdata1\n", __func__, c, v);
 			write_csr(tdata1, v);
 			if (ret) {
@@ -223,13 +206,13 @@ void main(void)
 				(v & TDATA1_MCONTROL_LOAD)  ? " LOAD"  : "",
 				(v & TDATA1_MCONTROL_STORE) ? " STORE" : "",
 				(v & TDATA1_MCONTROL_EXEC)  ? " EXEC"  : "",
-				(v & TDATA1_MCONTROL_MODE)  ? " MODE"  : "",
+				(v & TDATA1_MCONTROL_MODE_M)  ? " MODE_M"  : "",
 				(v & TDATA1_MCONTROL_CHAIN) ? " CHAIN" : "");
 		}
 
 		/* check icount trigger properties assuming it is WARL */
-		if (TINFO_ICOUNT(v)) {
-			v = TDATA1_ICOUNT_MODE | TDATA1_ICOUNT_COUNT_W(10);
+		if (TINFO_DBTR_ICOUNT(v)) {
+			v = TDATA1_ICOUNT_MODE_M | TDATA1_ICOUNT_COUNT_MAX;
 			xprintf("%s: trigger %lu: write 0x%lx to tdata1\n", __func__, c, v);
 			write_csr(tdata1, v);
 			if (ret) {
@@ -245,7 +228,7 @@ void main(void)
 			write_csr(tdata1, 0x0);
 			xprintf("%s: trigger %lu: read 0x%lx from tdata1\n", __func__, c, v);
 			xprintf("%s: trigger %lu: [%s %lu]\n", __func__, c,
-				(v & TDATA1_ICOUNT_MODE)  ? " MODE"  : "",
+				(v & TDATA1_ICOUNT_MODE_M)  ? " MODE_M"  : "",
 				TDATA1_ICOUNT_COUNT_R(v));
 		}
 	}

@@ -4,14 +4,8 @@
 
 #include "riscv_csr_encoding.h"
 #include "xprintf.h"
+#include "dbtr.h"
 #include "csr.h"
-
-#define TDATA1_MCONTROL_LOAD       (0x1 << 0)
-#define TDATA1_MCONTROL_STORE      (0x1 << 1)
-#define TDATA1_MCONTROL_EXEC       (0x1 << 2)
-#define TDATA1_MCONTROL_MMODE      (0x1 << 6)
-#define TDATA1_MCONTROL_CHAIN      (0x1 << 11)
-#define TDATA1_MCONTROL_HIT        (0x1 << 20)
 
 USART_HandleTypeDef husart0;
 int eret;
@@ -123,7 +117,10 @@ int enable_trigger(unsigned long trig, void *addr)
 		return -1;
 	}
 
-	v = TDATA1_MCONTROL_EXEC  | TDATA1_MCONTROL_MMODE;
+	v = TDATA1_MCONTROL_EXEC  | TDATA1_MCONTROL_MODE_M |
+		TDATA1_MCONTROL_MATCH_W(TDATA1_MCONTROL_MATCH_EQUAL) |
+		TDATA1_MCONTROL_ACTION_W(TDATA1_MCONTROL_ACTION_EBREAK);
+
 	write_csr(tdata1, v);
 	if (eret == CAUSE_ILLEGAL_INSTRUCTION) {
 		xprintf("%s: failed to set tdata1 for trigger #%lu...\n",

@@ -4,17 +4,11 @@
 
 #include "riscv_csr_encoding.h"
 #include "xprintf.h"
+#include "dbtr.h"
 #include "csr.h"
 
-#define SCR1_ICOUNT_DBTR        (2)
-
-#define TDATA1_ICOUNT_MMODE     (0x1 << 9)
-#define TDATA1_ICOUNT_HIT       (0x1 << 24)
-
-#define TDATA1_ICOUNT_CNT_SHIFT (10)
-#define TDATA1_ICOUNT_CNT_MASK  (0x3fff)
-
-#define ICOUNT_STEPS (100)
+#define SCR1_ICOUNT_DBTR  (2)
+#define ICOUNT_STEPS      (100)
 
 USART_HandleTypeDef husart0;
 
@@ -122,7 +116,8 @@ int enable_icount_trigger(unsigned int steps)
 		return -1;
 	}
 
-	v = ((steps & TDATA1_ICOUNT_CNT_MASK) << TDATA1_ICOUNT_CNT_SHIFT) | TDATA1_ICOUNT_MMODE;
+	v = TDATA1_ICOUNT_MODE_M | TDATA1_ICOUNT_COUNT_W(steps) |
+		TDATA1_ICOUNT_ACTION_W(TDATA1_MCONTROL_ACTION_EBREAK);
 
 	write_csr(tdata1, v);
 	if (eret == CAUSE_ILLEGAL_INSTRUCTION) {
@@ -224,8 +219,7 @@ int dump_icount_trigger(void)
 	r = read_csr(mtval);
 
 	xprintf("trigger #%lu: mtval[0x%lx] hit[%d] count[%d]\n",
-		trig, r, !!(v & TDATA1_ICOUNT_HIT),
-		((v >> TDATA1_ICOUNT_CNT_SHIFT) & TDATA1_ICOUNT_CNT_MASK));
+		trig, r, !!(v & TDATA1_ICOUNT_HIT), TDATA1_ICOUNT_COUNT_R(v));
 
 	return 0;
 }

@@ -19,7 +19,7 @@ LDFLAGS = -nostdlib --gc-sections --fatal-warnings
 # FIXME: suppress warning about RWX SRAM:
 LDFLAGS += --no-warn-rwx-segment
 
-CCFLAGS += \
+CCFLAGS += -Icommon/include \
 	   -I$(SHARED)/libs \
 	   -I$(SHARED)/include \
 	   -I$(SHARED)/periphery \
@@ -28,7 +28,7 @@ CCFLAGS += \
 
 LDFLAGS += -L $(SHARED)/ldscripts -L ld
 
-VPATH += src crt \
+VPATH += src crt common/src \
 	 $(SHARED)/libs \
 	 $(SHARED)/runtime \
 	 $(HAL)/core/Source \

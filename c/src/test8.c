@@ -3,18 +3,11 @@
 
 #include "riscv_csr_encoding.h"
 #include "xprintf.h"
+#include "dbtr.h"
 #include "csr.h"
 
-#define SCR1_ICOUNT_DBTR        (2)
-
-#define TDATA1_ICOUNT_MMODE     (0x1 << 9)
-#define TDATA1_ICOUNT_HIT       (0x1 << 24)
-
-#define TDATA1_ICOUNT_CNT_SHIFT (10)
-#define TDATA1_ICOUNT_CNT_MASK  (0x3fff)
-
+#define SCR1_ICOUNT_DBTR  (2)
 #define ILL_INSN (0x00000000)
-
 /* smaller value to fire in trap handler after re-arming */
 #define ICOUNT_STEPS (15)
 /* larger value to fire in main after re-arming */
@@ -90,8 +83,12 @@ void USART_Init()
 
 inline void enable_icount_trigger(unsigned int steps)
 {
+	unsigned long v;
+
 	write_csr(tselect, SCR1_ICOUNT_DBTR);
-	write_csr(tdata1, ((steps & TDATA1_ICOUNT_CNT_MASK) << TDATA1_ICOUNT_CNT_SHIFT) | TDATA1_ICOUNT_MMODE);
+	v = TDATA1_ICOUNT_MODE_M | TDATA1_ICOUNT_COUNT_W(steps) |
+		TDATA1_ICOUNT_ACTION_W(TDATA1_MCONTROL_ACTION_EBREAK);
+	write_csr(tdata1, v);
 }
 
 inline void disable_icount_trigger(void)
