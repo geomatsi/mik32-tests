@@ -163,6 +163,21 @@ test8: $(TEST8_LDS) $(TEST8_OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
 	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
+# test9: handling interrupts
+#  - peripherals: mik32-hal
+#  - xprintf: mik32v2-shared
+#  - startup: minimalistic custom for RAM
+#  - linker script: minimalistic custom for RAM
+
+TEST9_ASRCS := crt_sram.s
+TEST9_CSRCS := test9.c xprintf.c mik32_hal.c mik32_hal_pcc.c mik32_hal_gpio.c mik32_hal_usart.c mik32_hal_irq.c elbear_init.c
+TEST9_OBJS := $(patsubst %, $(BUILD)/%, $(TEST9_ASRCS:.s=.o))
+TEST9_OBJS += $(patsubst %, $(BUILD)/%, $(TEST9_CSRCS:.c=.o))
+TEST9_LDS := ld/sram.ld
+
+test9: $(TEST9_LDS) $(TEST9_OBJS)
+	$(LD) $(LDFLAGS) -T$< $(filter-out $<, $^) -o $(BUILD)/$@.elf
+	$(CP) -O binary $(BUILD)/$@.elf $(BUILD)/$@.bin
 
 # common
 
